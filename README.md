@@ -7,3 +7,4 @@ Use agile and iterative development to progress through the project.
 ## Team Members
 + Dishant Mishra
 + Brandon Mok
++ Tenzin Dhondup
