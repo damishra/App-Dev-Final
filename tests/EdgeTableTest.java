@@ -4,16 +4,23 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class EdgeTableTest {
-	EdgeTable testObj;
+	private EdgeTable testObj;
 
-	@Before
-	public void setUp() throws Exception {
-		testObj = new EdgeTable("1|testname");
+	private String str;
+
+	EdgeTableTest(String str) {
+		this.str = str;
+		testObj = new EdgeTable(str);
 		runner();
 	}
 
-	public void runner() {
+	@Before
+	public void setUp() {
+	}
 
+	public void runner() {
+		testgetNumFigure();
+		testgetName();
 	}
 
 	@Test
@@ -23,7 +30,8 @@ public class EdgeTableTest {
 
 	@Test
 	public void testgetName() {
-		assertEquals("Name is testname so it should testname", "testname", testObj.getName());
+
+		System.out.println(testObj.getName());assertEquals("Name is testname so it should testname", "testname", testObj.getName());
 	}
 
 	/*
@@ -51,7 +59,7 @@ public class EdgeTableTest {
 	public void testsetRelatedField() {
 		testObj.setRelatedField(0, 1);
 		int[] test = testObj.getRelatedFieldsArray();
-		assertEquals("IT works", 1, testObj.getRelatedFieldsArray());
+		assertEquals("IT works", 1, test);
 	}
 
 	@Test

@@ -1,3 +1,7 @@
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Request;
+import org.junit.runner.Result;
+
 import java.io.*;
 
 public class MainTester {
@@ -13,7 +17,8 @@ public class MainTester {
     public static final String ANSI_WHITE = "\u001B[37m";
 
     public static void main(String[] args) {
-        switch (args[0]) {
+        EdgeTableTest ett = new EdgeTableTest("1|testname");
+        /*switch (args[0]) {
         case "-h":
             help();
             break;
@@ -27,7 +32,10 @@ public class MainTester {
                 e.printStackTrace();
             }
             break;
-        }
+        case "":
+
+            break;
+        }*/
     }
 
     private static void help() {
@@ -43,7 +51,7 @@ public class MainTester {
 
     private static void file(String filename) throws Exception {
         BufferedReader br = new BufferedReader(new FileReader(new File(filename)));
-        String str = "";
+        String str;
         while ((str = br.readLine()) != null) {
             System.out.println(str);
         }
