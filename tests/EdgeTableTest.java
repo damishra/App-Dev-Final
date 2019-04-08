@@ -26,16 +26,16 @@ public class EdgeTableTest {
 		assertEquals("Name is testname so it should testname", "testname", testObj.getName());
 	}
 
+	/*
 	@Test
 	public void testaddRelatedTables(){
 		Boolean bool = false;
 		testObj.addRelatedTable(1);
-		testObj.get
 		if (testObj.alRelatedTables.size() > 0) {
 			bool = true;
 		}
 		assertEquals("What ever value added to the Related Table is added",		bool);
-	}
+	}*/
 
 	@Test
 	public void testgetRelatedTablesArray() {
