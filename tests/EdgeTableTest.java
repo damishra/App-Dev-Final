@@ -6,22 +6,19 @@ import org.junit.Test;
 public class EdgeTableTest {
 	private EdgeTable testObj;
 
-	private String str;
+	private static String param;
 
-	EdgeTableTest(String str) {
-		this.str = str;
-		testObj = new EdgeTable(str);
-		runner();
+	public void prepare(String param) {
+		EdgeTableTest.param = param;
 	}
 
 	@Before
 	public void setUp() {
+		testObj = new EdgeTable(param);
+		runner();
 	}
 
-	public void runner() {
-		testgetNumFigure();
-		testgetName();
-	}
+	public void runner() {}
 
 	@Test
 	public void testgetNumFigure() {
@@ -30,20 +27,8 @@ public class EdgeTableTest {
 
 	@Test
 	public void testgetName() {
-
-		System.out.println(testObj.getName());assertEquals("Name is testname so it should testname", "testname", testObj.getName());
+		assertEquals("Name is testname so it should testname", "testname", testObj.getName());
 	}
-
-	/*
-	@Test
-	public void testaddRelatedTables(){
-		Boolean bool = false;
-		testObj.addRelatedTable(1);
-		if (testObj.alRelatedTables.size() > 0) {
-			bool = true;
-		}
-		assertEquals("What ever value added to the Related Table is added",		bool);
-	}*/
 
 	@Test
 	public void testgetRelatedTablesArray() {
@@ -53,13 +38,6 @@ public class EdgeTableTest {
 	@Test
 	public void testgetRelatedFieldsArray() {
 		assertEquals("There should be no related fields array", null, testObj.getRelatedFieldsArray());
-	}
-
-	@Test
-	public void testsetRelatedField() {
-		testObj.setRelatedField(0, 1);
-		int[] test = testObj.getRelatedFieldsArray();
-		assertEquals("IT works", 1, test);
 	}
 
 	@Test

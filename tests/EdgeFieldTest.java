@@ -6,108 +6,98 @@ import org.junit.Test;
 public class EdgeFieldTest {
 	EdgeField testObj;
 
+	private static String param;
+
+	public void prepare(String param) {
+		EdgeFieldTest.param = param;
+	}
+
 	@Before
-	public void setUp() throws Exception {
-	testObj = new EdgeField("1|testname");
-	runner();
+	public void setUp() {
+		testObj = new EdgeField(param);
+		runner();
 	}
 
-	public void runner(){
-	testgetNumFigure();
-	testgetName();
-	testgetTableID();
-	testsetTableID();
-	testgetTableBound();
-
-
-
-	}
-
+	public void runner(){}
 
 	@Test
-	public void testgetNumFigure(){
+	public void testGetNumFigure(){
 		assertEquals("numFigure was intialized to 1 so it should be 1",1,testObj.getNumFigure());
 	}
 
 	@Test
-	public void testgetName(){
-		assertEquals("Name was intialized to testname","testname",testObj.getName());
+	public void testGetName(){
+		assertEquals("Name was initialized to testname","testname",testObj.getName());
 	}
 
 	@Test
-	public void testgetTableID(){
-		testObj.setTableID(0);
+	public void testGetTableID(){
 		assertEquals("TableID should be 0",0,testObj.getTableID());
 	}
 
 	@Test
-	public void testsetTableID(){
+	public void testGetTableBound(){
+		assertEquals("TableBound should be 0",0,testObj.getTableBound());
+	}
+
+	@Test
+	public void testSetTableID(){
 		testObj.setTableID(1);
 		assertEquals("TableID should be what you set it to",1,testObj.getTableID());
 	}
 
 	@Test
-	public void testgetTableBound(){
-		assertEquals("TableBound should be 0",0,testObj.getTableBound());
-	}
-
-	@Test
-	public void testsetTableBound(){
+	public void testSetTableBound(){
 		testObj.setTableBound(1);
 		assertEquals("TableBound should be what you set it to",1,testObj.getTableBound());
 	}
 
 	@Test
-	public void testgetFieldBound(){
+	public void testGetFieldBound(){
 		assertEquals("FieldBound should be 0",0,testObj.getFieldBound());
 	}
 
 	@Test
-	public void testsetFieldBound(){
+	public void testSetFieldBound(){
 		testObj.setFieldBound(1);
-		assertEquals("FieldBound should be what you set it to",1,testObj.getFieldBound());	
+		assertEquals("FieldBound should be what you set it to",1,testObj.getFieldBound());
 	}
 	
 	@Test
-	public void testgetDisallowNull(){
-		assertEquals("DisallowNull should be false",false,testObj.getDisallowNull());	
+	public void testGetDisallowNull(){
+		assertEquals("DisallowNull should be false",false,testObj.getDisallowNull());
 	}
 	
 	@Test 
-	public void testsetDisallowNull(){
+	public void testSetDisallowNull(){
 		testObj.setDisallowNull(true);
-		assertEquals("DisallowNull should be what you set it to",true,testObj.getDisallowNull());
+		assertEquals("DisallowNull should be what you set it to", true,testObj.getDisallowNull());
 	}
 
 	@Test
-	public void testgetIsPrimaryKey(){
+	public void testGetIsPrimaryKey(){
 		assertEquals("IsPrimaryKey should be false",false,testObj.getIsPrimaryKey());
 	}
 
 	@Test
-	public void testsetIsPrimaryKey(){
+	public void testSetIsPrimaryKey(){
 		testObj.setIsPrimaryKey(true);
 		assertEquals("IsPimaryKey should be what you set it to",true,testObj.getIsPrimaryKey());
 	}
- 
-	@Test
-	public void testgetDefaultValue(){
-		assertEquals("DefaultValue should be Null","",testObj.getDefaultValue());
-	}
 
 	@Test
-	public void testsetDefaultValue(){
+	public void testSetDefaultValue(){
 		testObj.setDefaultValue("Hi");
 		assertEquals("DefualtValue should be what you set it to","Hi",testObj.getDefaultValue());
 	}
 
 	@Test
-	public void testgetDataType(){
+	public void testGetDataType(){
 		assertEquals("DataType should be 0",0,testObj.getDataType());
 	}
 
 	@Test
-	public void testsetDataType(){
+	public void testSetDataType(){
 		testObj.setDataType(1);
 		assertEquals("DataType should be what you set it to",1,testObj.getDataType());
 	}
