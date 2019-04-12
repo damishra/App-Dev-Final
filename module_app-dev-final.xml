@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_app-dev-final" default="compile.module.app-dev-final">
+  <dirname property="module.app-dev-final.basedir" file="${ant.file.module_app-dev-final}"/>
+  
+  <property name="module.jdk.home.app-dev-final" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.app-dev-final" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.app-dev-final" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.app-dev-final" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="app-dev-final.output.dir" value="${module.app-dev-final.basedir}/out/production/App-Dev-Final"/>
+  <property name="app-dev-final.testoutput.dir" value="${module.app-dev-final.basedir}/out/test/App-Dev-Final"/>
+  
+  <path id="app-dev-final.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="app-dev-final.module.production.classpath">
+    <path refid="${module.jdk.classpath.app-dev-final}"/>
+    <pathelement location="${basedir}/lib/hamcrest-core-1.3.jar"/>
+    <pathelement location="${basedir}/lib/junit-4.12.jar"/>
+  </path>
+  
+  <path id="app-dev-final.runtime.production.module.classpath">
+    <pathelement location="${app-dev-final.output.dir}"/>
+    <pathelement location="${basedir}/lib/hamcrest-core-1.3.jar"/>
+    <pathelement location="${basedir}/lib/junit-4.12.jar"/>
+  </path>
+  
+  <path id="app-dev-final.module.classpath">
+    <path refid="${module.jdk.classpath.app-dev-final}"/>
+    <pathelement location="${app-dev-final.output.dir}"/>
+    <pathelement location="${basedir}/lib/hamcrest-core-1.3.jar"/>
+    <pathelement location="${basedir}/lib/junit-4.12.jar"/>
+  </path>
+  
+  <path id="app-dev-final.runtime.module.classpath">
+    <pathelement location="${app-dev-final.testoutput.dir}"/>
+    <pathelement location="${app-dev-final.output.dir}"/>
+    <pathelement location="${basedir}/lib/hamcrest-core-1.3.jar"/>
+    <pathelement location="${basedir}/lib/junit-4.12.jar"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.app-dev-final">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.app-dev-final">
+    <patternset refid="excluded.from.module.app-dev-final"/>
+  </patternset>
+  
+  <path id="app-dev-final.module.sourcepath">
+    <dirset dir="${module.app-dev-final.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  <path id="app-dev-final.module.test.sourcepath">
+    <dirset dir="${module.app-dev-final.basedir}">
+      <include name="tests"/>
+      <include name="lib"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.app-dev-final" depends="compile.module.app-dev-final.production,compile.module.app-dev-final.tests" description="Compile module App-Dev-Final"/>
+  
+  <target name="compile.module.app-dev-final.production" depends="register.custom.compilers" description="Compile module App-Dev-Final; production classes">
+    <mkdir dir="${app-dev-final.output.dir}"/>
+    <javac2 destdir="${app-dev-final.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.app-dev-final}/javac">
+      <compilerarg line="${compiler.args.app-dev-final}"/>
+      <bootclasspath refid="app-dev-final.module.bootclasspath"/>
+      <classpath refid="app-dev-final.module.production.classpath"/>
+      <src refid="app-dev-final.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.app-dev-final"/>
+    </javac2>
+    
+    <copy todir="${app-dev-final.output.dir}">
+      <fileset dir="${module.app-dev-final.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.app-dev-final.tests" depends="register.custom.compilers,compile.module.app-dev-final.production" description="compile module App-Dev-Final; test classes" unless="skip.tests">
+    <mkdir dir="${app-dev-final.testoutput.dir}"/>
+    <javac2 destdir="${app-dev-final.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.app-dev-final}/javac">
+      <compilerarg line="${compiler.args.app-dev-final}"/>
+      <bootclasspath refid="app-dev-final.module.bootclasspath"/>
+      <classpath refid="app-dev-final.module.classpath"/>
+      <src refid="app-dev-final.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.app-dev-final"/>
+    </javac2>
+    
+    <copy todir="${app-dev-final.testoutput.dir}">
+      <fileset dir="${module.app-dev-final.basedir}/tests">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.app-dev-final.basedir}/lib">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.app-dev-final" description="cleanup module">
+    <delete dir="${app-dev-final.output.dir}"/>
+    <delete dir="${app-dev-final.testoutput.dir}"/>
+  </target>
+</project>
