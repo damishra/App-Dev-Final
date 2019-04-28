@@ -889,6 +889,7 @@ public class EdgeConvertGUI {
       dlmDRFieldsTablesRelatedTo.clear();
    }
 
+   // PopulateLists - Populate the lists in the GUI
    private void populateLists() {
       if (readSuccess) {
          jfDT.setVisible(true);
@@ -897,7 +898,7 @@ public class EdgeConvertGUI {
          depopulateLists();
          for (int tIndex = 0; tIndex < tables.length; tIndex++) {
             String tempName = tables[tIndex].getName();
-            dlmDTTablesAll.addElement(tempName);
+            dlmDTTablesAll.addElement(tempName);   // Adding elements to area where table names are on GUI
             int[] relatedTables = tables[tIndex].getRelatedTablesArray();
             if (relatedTables.length > 0) {
                dlmDRTablesRelations.addElement(tempName);
@@ -1206,6 +1207,8 @@ public class EdgeConvertGUI {
    class EdgeMenuListener implements ActionListener {
       public void actionPerformed(ActionEvent ae) {
          int returnVal;
+
+         // Open the EDGE File Option !
          if ((ae.getSource() == jmiDTOpenEdge) || (ae.getSource() == jmiDROpenEdge)) {
             if (!dataSaved) {
                int answer = JOptionPane.showConfirmDialog(null, "You currently have unsaved data. Continue?",
@@ -1227,7 +1230,7 @@ public class EdgeConvertGUI {
                }
                fields = ecfp.getEdgeFields(); // Uses EdgeConvertFileParser to get the Fields!
                ecfp = null;                   // resets the parser object
-               
+
                populateLists();
                saveFile = null;
                jmiDTSave.setEnabled(false);
@@ -1242,8 +1245,6 @@ public class EdgeConvertGUI {
                truncatedFilename = parseFile.getName().substring(parseFile.getName().lastIndexOf(File.separator) + 1);
                jfDT.setTitle(DEFINE_TABLES + " - " + truncatedFilename);
                jfDR.setTitle(DEFINE_RELATIONS + " - " + truncatedFilename);
-            } else {
-               return;
             }
             dataSaved = true;
          }
