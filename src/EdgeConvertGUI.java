@@ -1214,17 +1214,20 @@ public class EdgeConvertGUI {
                   return;
                }
             }
+
+            // Choosing Open EdgeFile -> the dialog that shows
             jfcEdge.addChoosableFileFilter(effEdge);
             returnVal = jfcEdge.showOpenDialog(null);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                parseFile = jfcEdge.getSelectedFile();
                ecfp = new EdgeConvertFileParser(parseFile);
-               tables = ecfp.getEdgeTables();
+               tables = ecfp.getEdgeTables();   // Uses EdgeConvertFileParser to get the tables!
                for (int i = 0; i < tables.length; i++) {
                   tables[i].makeArrays();
                }
-               fields = ecfp.getEdgeFields();
-               ecfp = null;
+               fields = ecfp.getEdgeFields(); // Uses EdgeConvertFileParser to get the Fields!
+               ecfp = null;                   // resets the parser object
+               
                populateLists();
                saveFile = null;
                jmiDTSave.setEnabled(false);
