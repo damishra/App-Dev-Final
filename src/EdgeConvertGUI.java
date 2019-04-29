@@ -69,6 +69,8 @@ public class EdgeConvertGUI {
    private String[] productNames;
    private Object[] objSubclasses;
 
+   private CreateDDLMySQLFileWriter cddlmsqlfw = null;
+
    public EdgeConvertGUI() {
       menuListener = new EdgeMenuListener();
       radioListener = new EdgeRadioButtonListener();
@@ -357,101 +359,95 @@ public class EdgeConvertGUI {
       jcheckDTDisallowNull = new JCheckBox("Disallow Null");
       jcheckDTDisallowNull.setEnabled(false);
       jcheckDTDisallowNull.addItemListener(
-              new ItemListener() {
-                 public void itemStateChanged(ItemEvent ie) {
-                    currentDTField.setDisallowNull(jcheckDTDisallowNull.isSelected());
-                    dataSaved = false;
-                 }
+              ie -> {
+                 currentDTField.setDisallowNull(jcheckDTDisallowNull.isSelected());
+                 dataSaved = false;
               }
       );
 
       jcheckDTPrimaryKey = new JCheckBox("Primary Key");
       jcheckDTPrimaryKey.setEnabled(false);
       jcheckDTPrimaryKey.addItemListener(
-              new ItemListener() {
-                 public void itemStateChanged(ItemEvent ie) {
-                    currentDTField.setIsPrimaryKey(jcheckDTPrimaryKey.isSelected());
-                    dataSaved = false;
-                 }
+              ie -> {
+                 currentDTField.setIsPrimaryKey(jcheckDTPrimaryKey.isSelected());
+                 dataSaved = false;
               }
       );
 
       jbDTDefaultValue = new JButton("Set Default Value");
       jbDTDefaultValue.setEnabled(false);
       jbDTDefaultValue.addActionListener(
-              new ActionListener() {
-                 public void actionPerformed(ActionEvent ae) {
-                    String prev = jtfDTDefaultValue.getText();
-                    boolean goodData = false;
-                    int i = currentDTField.getDataType();
-                    do {
-                       String result = (String)JOptionPane.showInputDialog(
-                               null,
-                               "Enter the default value:",
-                               "Default Value",
-                               JOptionPane.PLAIN_MESSAGE,
-                               null,
-                               null,
-                               prev);
+              ae -> {
+                 String prev = jtfDTDefaultValue.getText();
+                 boolean goodData = false;
+                 int i = currentDTField.getDataType();
+                 do {
+                    String result = (String) JOptionPane.showInputDialog(
+                            null,
+                            "Enter the default value:",
+                            "Default Value",
+                            JOptionPane.PLAIN_MESSAGE,
+                            null,
+                            null,
+                            prev);
 
-                       if ((result == null)) {
-                          jtfDTDefaultValue.setText(prev);
-                          return;
-                       }
-                       switch (i) {
-                          case 0: //varchar
-                             if (result.length() <= Integer.parseInt(jtfDTVarchar.getText())) {
-                                jtfDTDefaultValue.setText(result);
-                                goodData = true;
-                             } else {
-                                JOptionPane.showMessageDialog(null, "The length of this value must be less than or equal to the Varchar length specified.");
-                             }
-                             break;
-                          case 1: //boolean
-                             String newResult = result.toLowerCase();
-                             if (newResult.equals("true") || newResult.equals("false")) {
-                                jtfDTDefaultValue.setText(newResult);
-                                goodData = true;
-                             } else {
-                                JOptionPane.showMessageDialog(null, "You must input a valid boolean value (\"true\" or \"false\").");
-                             }
-                             break;
-                          case 2: //Integer
-                             try {
-                                int intResult = Integer.parseInt(result);
-                                jtfDTDefaultValue.setText(result);
-                                goodData = true;
-                             } catch (NumberFormatException nfe) {
-                                JOptionPane.showMessageDialog(null, "\"" + result + "\" is not an integer or is outside the bounds of valid integer values.");
-                             }
-                             break;
-                          case 3: //Double
-                             try {
-                                double doubleResult = Double.parseDouble(result);
-                                jtfDTDefaultValue.setText(result);
-                                goodData = true;
-                             } catch (NumberFormatException nfe) {
-                                JOptionPane.showMessageDialog(null, "\"" + result + "\" is not a double or is outside the bounds of valid double values.");
-                             }
-                             break;
-                          case 4: //Timestamp
-                             try {
-                                jtfDTDefaultValue.setText(result);
-                                goodData = true;
-                             } catch (Exception e) {
-
-                             }
-                             break;
-                       }
-                    } while (!goodData);
-                    int selIndex = jlDTFieldsTablesAll.getSelectedIndex();
-                    if (selIndex >= 0) {
-                       String selText = dlmDTFieldsTablesAll.getElementAt(selIndex).toString();
-                       setCurrentDTField(selText);
-                       currentDTField.setDefaultValue(jtfDTDefaultValue.getText());
+                    if ((result == null)) {
+                       jtfDTDefaultValue.setText(prev);
+                       return;
                     }
-                    dataSaved = false;
+                    switch (i) {
+                       case 0: //varchar
+                          if (result.length() <= Integer.parseInt(jtfDTVarchar.getText())) {
+                             jtfDTDefaultValue.setText(result);
+                             goodData = true;
+                          } else {
+                             JOptionPane.showMessageDialog(null, "The length of this value must be less than or equal to the Varchar length specified.");
+                          }
+                          break;
+                       case 1: //boolean
+                          String newResult = result.toLowerCase();
+                          if (newResult.equals("true") || newResult.equals("false")) {
+                             jtfDTDefaultValue.setText(newResult);
+                             goodData = true;
+                          } else {
+                             JOptionPane.showMessageDialog(null, "You must input a valid boolean value (\"true\" or \"false\").");
+                          }
+                          break;
+                       case 2: //Integer
+                          try {
+                             int intResult = Integer.parseInt(result);
+                             jtfDTDefaultValue.setText(result);
+                             goodData = true;
+                          } catch (NumberFormatException nfe) {
+                             JOptionPane.showMessageDialog(null, "\"" + result + "\" is not an integer or is outside the bounds of valid integer values.");
+                          }
+                          break;
+                       case 3: //Double
+                          try {
+                             double doubleResult = Double.parseDouble(result);
+                             jtfDTDefaultValue.setText(result);
+                             goodData = true;
+                          } catch (NumberFormatException nfe) {
+                             JOptionPane.showMessageDialog(null, "\"" + result + "\" is not a double or is outside the bounds of valid double values.");
+                          }
+                          break;
+                       case 4: //Timestamp
+                          try {
+                             jtfDTDefaultValue.setText(result);
+                             goodData = true;
+                          } catch (Exception e) {
+
+                          }
+                          break;
+                    }
+                 } while (!goodData);
+                 int selIndex = jlDTFieldsTablesAll.getSelectedIndex();
+                 if (selIndex >= 0) {
+                    String selText = dlmDTFieldsTablesAll.getElementAt(selIndex).toString();
+                    setCurrentDTField(selText);
+                    currentDTField.setDefaultValue(jtfDTDefaultValue.getText());
                  }
+                 dataSaved = false;
               }
       ); //jbDTDefaultValue.addActionListener
       jtfDTDefaultValue = new JTextField();
@@ -460,45 +456,43 @@ public class EdgeConvertGUI {
       jbDTVarchar = new JButton("Set Varchar Length");
       jbDTVarchar.setEnabled(false);
       jbDTVarchar.addActionListener(
-              new ActionListener() {
-                 public void actionPerformed(ActionEvent ae) {
-                    String prev = jtfDTVarchar.getText();
-                    String result = (String)JOptionPane.showInputDialog(
-                            null,
-                            "Enter the varchar length:",
-                            "Varchar Length",
-                            JOptionPane.PLAIN_MESSAGE,
-                            null,
-                            null,
-                            prev);
-                    if ((result == null)) {
-                       jtfDTVarchar.setText(prev);
-                       return;
-                    }
-                    int selIndex = jlDTFieldsTablesAll.getSelectedIndex();
-                    int varchar;
-                    try {
-                       if (result.length() > 5) {
-                          JOptionPane.showMessageDialog(null, "Varchar length must be greater than 0 and less than or equal to 65535.");
-                          jtfDTVarchar.setText(Integer.toString(EdgeField.VARCHAR_DEFAULT_LENGTH));
-                          return;
-                       }
-                       varchar = Integer.parseInt(result);
-                       if (varchar > 0 && varchar <= 65535) { // max length of varchar is 255 before v5.0.3
-                          jtfDTVarchar.setText(Integer.toString(varchar));
-                          currentDTField.setVarcharValue(varchar);
-                       } else {
-                          JOptionPane.showMessageDialog(null, "Varchar length must be greater than 0 and less than or equal to 65535.");
-                          jtfDTVarchar.setText(Integer.toString(EdgeField.VARCHAR_DEFAULT_LENGTH));
-                          return;
-                       }
-                    } catch (NumberFormatException nfe) {
-                       JOptionPane.showMessageDialog(null, "\"" + result + "\" is not a number");
+              ae -> {
+                 String prev = jtfDTVarchar.getText();
+                 String result = (String) JOptionPane.showInputDialog(
+                         null,
+                         "Enter the varchar length:",
+                         "Varchar Length",
+                         JOptionPane.PLAIN_MESSAGE,
+                         null,
+                         null,
+                         prev);
+                 if ((result == null)) {
+                    jtfDTVarchar.setText(prev);
+                    return;
+                 }
+                 int selIndex = jlDTFieldsTablesAll.getSelectedIndex();
+                 int varchar;
+                 try {
+                    if (result.length() > 5) {
+                       JOptionPane.showMessageDialog(null, "Varchar length must be greater than 0 and less than or equal to 65535.");
                        jtfDTVarchar.setText(Integer.toString(EdgeField.VARCHAR_DEFAULT_LENGTH));
                        return;
                     }
-                    dataSaved = false;
+                    varchar = Integer.parseInt(result);
+                    if (varchar > 0 && varchar <= 65535) { // max length of varchar is 255 before v5.0.3
+                       jtfDTVarchar.setText(Integer.toString(varchar));
+                       currentDTField.setVarcharValue(varchar);
+                    } else {
+                       JOptionPane.showMessageDialog(null, "Varchar length must be greater than 0 and less than or equal to 65535.");
+                       jtfDTVarchar.setText(Integer.toString(EdgeField.VARCHAR_DEFAULT_LENGTH));
+                       return;
+                    }
+                 } catch (NumberFormatException nfe) {
+                    JOptionPane.showMessageDialog(null, "\"" + result + "\" is not a number");
+                    jtfDTVarchar.setText(Integer.toString(EdgeField.VARCHAR_DEFAULT_LENGTH));
+                    return;
                  }
+                 dataSaved = false;
               }
       );
       jtfDTVarchar = new JTextField();
@@ -589,27 +583,25 @@ public class EdgeConvertGUI {
       dlmDRTablesRelations = new DefaultListModel();
       jlDRTablesRelations = new JList(dlmDRTablesRelations);
       jlDRTablesRelations.addListSelectionListener(
-              new ListSelectionListener() {
-                 public void valueChanged(ListSelectionEvent lse)  {
-                    int selIndex = jlDRTablesRelations.getSelectedIndex();
-                    if (selIndex >= 0) {
-                       String selText = dlmDRTablesRelations.getElementAt(selIndex).toString();
-                       setCurrentDRTable1(selText);
-                       int[] currentNativeFields, currentRelatedTables, currentRelatedFields;
-                       currentNativeFields = currentDRTable1.getNativeFieldsArray();
-                       currentRelatedTables = currentDRTable1.getRelatedTablesArray();
-                       jlDRFieldsTablesRelations.clearSelection();
-                       jlDRTablesRelatedTo.clearSelection();
-                       jlDRFieldsTablesRelatedTo.clearSelection();
-                       dlmDRFieldsTablesRelations.removeAllElements();
-                       dlmDRTablesRelatedTo.removeAllElements();
-                       dlmDRFieldsTablesRelatedTo.removeAllElements();
-                       for (int fIndex = 0; fIndex < currentNativeFields.length; fIndex++) {
-                          dlmDRFieldsTablesRelations.addElement(getFieldName(currentNativeFields[fIndex]));
-                       }
-                       for (int rIndex = 0; rIndex < currentRelatedTables.length; rIndex++) {
-                          dlmDRTablesRelatedTo.addElement(getTableName(currentRelatedTables[rIndex]));
-                       }
+              lse -> {
+                 int selIndex = jlDRTablesRelations.getSelectedIndex();
+                 if (selIndex >= 0) {
+                    String selText = dlmDRTablesRelations.getElementAt(selIndex).toString();
+                    setCurrentDRTable1(selText);
+                    int[] currentNativeFields, currentRelatedTables, currentRelatedFields;
+                    currentNativeFields = currentDRTable1.getNativeFieldsArray();
+                    currentRelatedTables = currentDRTable1.getRelatedTablesArray();
+                    jlDRFieldsTablesRelations.clearSelection();
+                    jlDRTablesRelatedTo.clearSelection();
+                    jlDRFieldsTablesRelatedTo.clearSelection();
+                    dlmDRFieldsTablesRelations.removeAllElements();
+                    dlmDRTablesRelatedTo.removeAllElements();
+                    dlmDRFieldsTablesRelatedTo.removeAllElements();
+                    for (int fIndex = 0; fIndex < currentNativeFields.length; fIndex++) {
+                       dlmDRFieldsTablesRelations.addElement(getFieldName(currentNativeFields[fIndex]));
+                    }
+                    for (int rIndex = 0; rIndex < currentRelatedTables.length; rIndex++) {
+                       dlmDRTablesRelatedTo.addElement(getTableName(currentRelatedTables[rIndex]));
                     }
                  }
               }
@@ -618,20 +610,18 @@ public class EdgeConvertGUI {
       dlmDRFieldsTablesRelations = new DefaultListModel();
       jlDRFieldsTablesRelations = new JList(dlmDRFieldsTablesRelations);
       jlDRFieldsTablesRelations.addListSelectionListener(
-              new ListSelectionListener() {
-                 public void valueChanged(ListSelectionEvent lse)  {
-                    int selIndex = jlDRFieldsTablesRelations.getSelectedIndex();
-                    if (selIndex >= 0) {
-                       String selText = dlmDRFieldsTablesRelations.getElementAt(selIndex).toString();
-                       setCurrentDRField1(selText);
-                       if (currentDRField1.getFieldBound() == 0) {
-                          jlDRTablesRelatedTo.clearSelection();
-                          jlDRFieldsTablesRelatedTo.clearSelection();
-                          dlmDRFieldsTablesRelatedTo.removeAllElements();
-                       } else {
-                          jlDRTablesRelatedTo.setSelectedValue(getTableName(currentDRField1.getTableBound()), true);
-                          jlDRFieldsTablesRelatedTo.setSelectedValue(getFieldName(currentDRField1.getFieldBound()), true);
-                       }
+              lse -> {
+                 int selIndex = jlDRFieldsTablesRelations.getSelectedIndex();
+                 if (selIndex >= 0) {
+                    String selText = dlmDRFieldsTablesRelations.getElementAt(selIndex).toString();
+                    setCurrentDRField1(selText);
+                    if (currentDRField1.getFieldBound() == 0) {
+                       jlDRTablesRelatedTo.clearSelection();
+                       jlDRFieldsTablesRelatedTo.clearSelection();
+                       dlmDRFieldsTablesRelatedTo.removeAllElements();
+                    } else {
+                       jlDRTablesRelatedTo.setSelectedValue(getTableName(currentDRField1.getTableBound()), true);
+                       jlDRFieldsTablesRelatedTo.setSelectedValue(getFieldName(currentDRField1.getFieldBound()), true);
                     }
                  }
               }
@@ -640,17 +630,15 @@ public class EdgeConvertGUI {
       dlmDRTablesRelatedTo = new DefaultListModel();
       jlDRTablesRelatedTo = new JList(dlmDRTablesRelatedTo);
       jlDRTablesRelatedTo.addListSelectionListener(
-              new ListSelectionListener() {
-                 public void valueChanged(ListSelectionEvent lse)  {
-                    int selIndex = jlDRTablesRelatedTo.getSelectedIndex();
-                    if (selIndex >= 0) {
-                       String selText = dlmDRTablesRelatedTo.getElementAt(selIndex).toString();
-                       setCurrentDRTable2(selText);
-                       int[] currentNativeFields = currentDRTable2.getNativeFieldsArray();
-                       dlmDRFieldsTablesRelatedTo.removeAllElements();
-                       for (int fIndex = 0; fIndex < currentNativeFields.length; fIndex++) {
-                          dlmDRFieldsTablesRelatedTo.addElement(getFieldName(currentNativeFields[fIndex]));
-                       }
+              lse -> {
+                 int selIndex = jlDRTablesRelatedTo.getSelectedIndex();
+                 if (selIndex >= 0) {
+                    String selText = dlmDRTablesRelatedTo.getElementAt(selIndex).toString();
+                    setCurrentDRTable2(selText);
+                    int[] currentNativeFields = currentDRTable2.getNativeFieldsArray();
+                    dlmDRFieldsTablesRelatedTo.removeAllElements();
+                    for (int fIndex = 0; fIndex < currentNativeFields.length; fIndex++) {
+                       dlmDRFieldsTablesRelatedTo.addElement(getFieldName(currentNativeFields[fIndex]));
                     }
                  }
               }
@@ -659,16 +647,14 @@ public class EdgeConvertGUI {
       dlmDRFieldsTablesRelatedTo = new DefaultListModel();
       jlDRFieldsTablesRelatedTo = new JList(dlmDRFieldsTablesRelatedTo);
       jlDRFieldsTablesRelatedTo.addListSelectionListener(
-              new ListSelectionListener() {
-                 public void valueChanged(ListSelectionEvent lse)  {
-                    int selIndex = jlDRFieldsTablesRelatedTo.getSelectedIndex();
-                    if (selIndex >= 0) {
-                       String selText = dlmDRFieldsTablesRelatedTo.getElementAt(selIndex).toString();
-                       setCurrentDRField2(selText);
-                       jbDRBindRelation.setEnabled(true);
-                    } else {
-                       jbDRBindRelation.setEnabled(false);
-                    }
+              lse -> {
+                 int selIndex = jlDRFieldsTablesRelatedTo.getSelectedIndex();
+                 if (selIndex >= 0) {
+                    String selText = dlmDRFieldsTablesRelatedTo.getElementAt(selIndex).toString();
+                    setCurrentDRField2(selText);
+                    jbDRBindRelation.setEnabled(true);
+                 } else {
+                    jbDRBindRelation.setEnabled(false);
                  }
               }
       );
@@ -698,68 +684,64 @@ public class EdgeConvertGUI {
 
       jbDRDefineTables = new JButton(DEFINE_TABLES);
       jbDRDefineTables.addActionListener(
-              new ActionListener() {
-                 public void actionPerformed(ActionEvent ae) {
-                    jfDT.setVisible(true); //show the Define Tables screen
-                    jfDR.setVisible(false);
-                    clearDRControls();
-                    depopulateLists();
-                    populateLists();
-                 }
+              ae -> {
+                 jfDT.setVisible(true); //show the Define Tables screen
+                 jfDR.setVisible(false);
+                 clearDRControls();
+                 depopulateLists();
+                 populateLists();
               }
       );
 
       jbDRBindRelation = new JButton("Bind/Unbind Relation");
       jbDRBindRelation.setEnabled(false);
       jbDRBindRelation.addActionListener(
-              new ActionListener() {
-                 public void actionPerformed(ActionEvent ae) {
-                    int nativeIndex = jlDRFieldsTablesRelations.getSelectedIndex();
-                    int relatedField = currentDRField2.getNumFigure();
-                    if (currentDRField1.getFieldBound() == relatedField) { //the selected fields are already bound to each other
-                       int answer = JOptionPane.showConfirmDialog(null, "Do you wish to unbind the relation on field " +
-                                       currentDRField1.getName() + "?",
-                               "Are you sure?", JOptionPane.YES_NO_OPTION);
-                       if (answer == JOptionPane.YES_OPTION) {
-                          currentDRTable1.setRelatedField(nativeIndex, 0); //clear the related field
-                          currentDRField1.setTableBound(0); //clear the bound table
-                          currentDRField1.setFieldBound(0); //clear the bound field
-                          jlDRFieldsTablesRelatedTo.clearSelection(); //clear the listbox selection
-                       }
+              ae -> {
+                 int nativeIndex = jlDRFieldsTablesRelations.getSelectedIndex();
+                 int relatedField = currentDRField2.getNumFigure();
+                 if (currentDRField1.getFieldBound() == relatedField) { //the selected fields are already bound to each other
+                    int answer = JOptionPane.showConfirmDialog(null, "Do you wish to unbind the relation on field " +
+                                    currentDRField1.getName() + "?",
+                            "Are you sure?", JOptionPane.YES_NO_OPTION);
+                    if (answer == JOptionPane.YES_OPTION) {
+                       currentDRTable1.setRelatedField(nativeIndex, 0); //clear the related field
+                       currentDRField1.setTableBound(0); //clear the bound table
+                       currentDRField1.setFieldBound(0); //clear the bound field
+                       jlDRFieldsTablesRelatedTo.clearSelection(); //clear the listbox selection
+                    }
+                    return;
+                 }
+                 if (currentDRField1.getFieldBound() != 0) { //field is already bound to a different field
+                    int answer = JOptionPane.showConfirmDialog(null, "There is already a relation defined on field " +
+                                    currentDRField1.getName() + ", do you wish to overwrite it?",
+                            "Are you sure?", JOptionPane.YES_NO_OPTION);
+                    if (answer == JOptionPane.NO_OPTION || answer == JOptionPane.CLOSED_OPTION) {
+                       jlDRTablesRelatedTo.setSelectedValue(getTableName(currentDRField1.getTableBound()), true); //revert selections to saved settings
+                       jlDRFieldsTablesRelatedTo.setSelectedValue(getFieldName(currentDRField1.getFieldBound()), true); //revert selections to saved settings
                        return;
                     }
-                    if (currentDRField1.getFieldBound() != 0) { //field is already bound to a different field
-                       int answer = JOptionPane.showConfirmDialog(null, "There is already a relation defined on field " +
-                                       currentDRField1.getName() + ", do you wish to overwrite it?",
-                               "Are you sure?", JOptionPane.YES_NO_OPTION);
-                       if (answer == JOptionPane.NO_OPTION || answer == JOptionPane.CLOSED_OPTION) {
-                          jlDRTablesRelatedTo.setSelectedValue(getTableName(currentDRField1.getTableBound()), true); //revert selections to saved settings
-                          jlDRFieldsTablesRelatedTo.setSelectedValue(getFieldName(currentDRField1.getFieldBound()), true); //revert selections to saved settings
-                          return;
-                       }
-                    }
-                    if (currentDRField1.getDataType() != currentDRField2.getDataType()) {
-                       JOptionPane.showMessageDialog(null, "The datatypes of " + currentDRTable1.getName() + "." +
+                 }
+                 if (currentDRField1.getDataType() != currentDRField2.getDataType()) {
+                    JOptionPane.showMessageDialog(null, "The datatypes of " + currentDRTable1.getName() + "." +
+                            currentDRField1.getName() + " and " + currentDRTable2.getName() +
+                            "." + currentDRField2.getName() + " do not match.  Unable to bind this relation.");
+                    return;
+                 }
+                 if ((currentDRField1.getDataType() == 0) && (currentDRField2.getDataType() == 0)) {
+                    if (currentDRField1.getVarcharValue() != currentDRField2.getVarcharValue()) {
+                       JOptionPane.showMessageDialog(null, "The varchar lengths of " + currentDRTable1.getName() + "." +
                                currentDRField1.getName() + " and " + currentDRTable2.getName() +
                                "." + currentDRField2.getName() + " do not match.  Unable to bind this relation.");
                        return;
                     }
-                    if ((currentDRField1.getDataType() == 0) && (currentDRField2.getDataType() == 0)) {
-                       if (currentDRField1.getVarcharValue() != currentDRField2.getVarcharValue()) {
-                          JOptionPane.showMessageDialog(null, "The varchar lengths of " + currentDRTable1.getName() + "." +
-                                  currentDRField1.getName() + " and " + currentDRTable2.getName() +
-                                  "." + currentDRField2.getName() + " do not match.  Unable to bind this relation.");
-                          return;
-                       }
-                    }
-                    currentDRTable1.setRelatedField(nativeIndex, relatedField);
-                    currentDRField1.setTableBound(currentDRTable2.getNumFigure());
-                    currentDRField1.setFieldBound(currentDRField2.getNumFigure());
-                    JOptionPane.showMessageDialog(null, "Table " + currentDRTable1.getName() + ": native field " +
-                            currentDRField1.getName() + " bound to table " + currentDRTable2.getName() +
-                            " on field " + currentDRField2.getName());
-                    dataSaved = false;
                  }
+                 currentDRTable1.setRelatedField(nativeIndex, relatedField);
+                 currentDRField1.setTableBound(currentDRTable2.getNumFigure());
+                 currentDRField1.setFieldBound(currentDRField2.getNumFigure());
+                 JOptionPane.showMessageDialog(null, "Table " + currentDRTable1.getName() + ": native field " +
+                         currentDRField1.getName() + " bound to table " + currentDRTable2.getName() +
+                         " on field " + currentDRField2.getName());
+                 dataSaved = false;
               }
       );
 
@@ -936,7 +918,12 @@ public class EdgeConvertGUI {
    }
 
    private void writeSave() {
-      if (saveFile != null) {
+      try {
+         cddlmsqlfw.makeIt();
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+      /*if (saveFile != null) {
          try {
             pw = new PrintWriter(new BufferedWriter(new FileWriter(saveFile, false)));
             //write the identification line
@@ -957,7 +944,7 @@ public class EdgeConvertGUI {
             System.out.println(ioe);
          }
          dataSaved = true;
-      }
+      }*/
    }
 
    private void setOutputDir() {
@@ -1047,12 +1034,11 @@ public class EdgeConvertGUI {
       }
       if (alProductNames.size() > 0 && alSubclasses.size() > 0) { //do not recreate productName and objSubClasses arrays if the new path is empty of valid files
          productNames = (String[])alProductNames.toArray(new String[alProductNames.size()]);
-         objSubclasses = (Object[])alSubclasses.toArray(new Object[alSubclasses.size()]);
+         objSubclasses = alSubclasses.toArray(new Object[alSubclasses.size()]);
       }
    }
 
    private String getSQLStatements() {
-      String strSQLString = "";
       String response = (String)JOptionPane.showInputDialog(
               null,
               "Select a product:",
@@ -1073,6 +1059,7 @@ public class EdgeConvertGUI {
          }
       }
 
+      String strSQLString = "";
       try {
          Class selectedSubclass = objSubclasses[selected].getClass();
          Method getSQLString = selectedSubclass.getMethod("getSQLString", null);
@@ -1091,7 +1078,7 @@ public class EdgeConvertGUI {
    }
 
    private void writeSQL(String output) {
-      jfcEdge.resetChoosableFileFilters();
+     /* jfcEdge.resetChoosableFileFilters();
       String str;
       if (parseFile != null) {
          outputFile = new File(parseFile.getAbsolutePath().substring(0, (parseFile.getAbsolutePath().lastIndexOf(File.separator) + 1)) + databaseName + ".sql");
@@ -1121,7 +1108,8 @@ public class EdgeConvertGUI {
          } catch (IOException ioe) {
             System.out.println(ioe);
          }
-      }
+      }*/
+
    }
 
    class EdgeRadioButtonListener implements ActionListener {
@@ -1188,8 +1176,13 @@ public class EdgeConvertGUI {
 
    class CreateDDLButtonListener implements ActionListener {
       public void actionPerformed(ActionEvent ae) {
+         try {
+            cddlmsqlfw.makeIt();
+         } catch (IOException e) {
+            e.printStackTrace();
+         }
          // if user DID NOT provided output is
-         if (outputDir == null) {
+         /*if (outputDir == null) {
             JOptionPane.showMessageDialog(null, "You have not selected a path that contains valid output definition files yet.\nPlease select a path now.");
             setOutputDir();
          }
@@ -1200,7 +1193,7 @@ public class EdgeConvertGUI {
                return;
             }
             writeSQL(sqlString);
-         }
+         }*/ //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------;
       }
    }
 
@@ -1230,6 +1223,8 @@ public class EdgeConvertGUI {
                }
                fields = ecfp.getEdgeFields(); // Uses EdgeConvertFileParser to get the Fields!
                ecfp = null;                   // resets the parser object
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------;
+               cddlmsqlfw = new CreateDDLMySQLFileWriter(fields, tables);
 
                populateLists();
                saveFile = null;
@@ -1262,8 +1257,12 @@ public class EdgeConvertGUI {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                saveFile = jfcEdge.getSelectedFile();
                ecfp = new EdgeConvertFileParser(saveFile);
-               tables = ecfp.getEdgeTables();
-               fields = ecfp.getEdgeFields();
+               tables = ecfp.getEdgeTables();            // GUI Gets the TABLES
+               fields = ecfp.getEdgeFields();            // GUI Gets the FIELDS
+
+               //----------------------------------------------------------------------------------------------------------------------------------------------------------;
+               cddlmsqlfw = new CreateDDLMySQLFileWriter(fields, tables);
+
                ecfp = null;
                populateLists();
                parseFile = null;

@@ -7,7 +7,7 @@ import java.util.*;
 
 public class CreateDDLMySQL extends EdgeConvertCreateDDL {
 
-   protected String databaseName;
+   protected String databaseName = "MySQLDB";
    //this array is for determining how MySQL refers to datatypes
    protected String[] strDataType = {"VARCHAR", "BOOL", "INT", "DOUBLE"};
    protected StringBuffer sb;
@@ -18,7 +18,7 @@ public class CreateDDLMySQL extends EdgeConvertCreateDDL {
    } //CreateDDLMySQL(EdgeTable[], EdgeField[])
    
    public CreateDDLMySQL() { //default constructor with empty arg list for to allow output dir to be set before there are table and field objects
-      
+
    }
    
    public void createDDL() {
@@ -92,8 +92,13 @@ public class CreateDDLMySQL extends EdgeConvertCreateDDL {
                         currentFK++;
                      }
                   }
+
                   sb.append("\r\n");
                }
+
+               String str = sb.toString();
+               str = str.replaceAll(",$", "");
+               sb = new StringBuffer(str);
                sb.append(");\r\n\r\n"); //end of table
             }
          }
@@ -110,7 +115,7 @@ public class CreateDDLMySQL extends EdgeConvertCreateDDL {
    
    public String generateDatabaseName() { //prompts user for database name
       String dbNameDefault = "MySQLDB";
-      //String databaseName = "";
+      String databaseName = "default";
 
       do {
          databaseName = (String)JOptionPane.showInputDialog(

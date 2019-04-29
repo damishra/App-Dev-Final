@@ -95,10 +95,10 @@ public class EdgeConvertFileParser {
                      EdgeConvertGUI.setReadSuccess(false);
                      break;
                   }
-                  alTables.add(new EdgeTable(numFigure + DELIM + text));
+                  alTables.add(new EdgeTable(numFigure + DELIM + text));            // EdgeTables are ADDED
                }
                if (isAttribute) { //create a new EdgeField object and add it to the alFields ArrayList
-                  tempField = new EdgeField(numFigure + DELIM + text);
+                  tempField = new EdgeField(numFigure + DELIM + text);              // EdgeFields are ADDED
                   tempField.setIsPrimaryKey(isUnderlined);
                   alFields.add(tempField);
                }
@@ -202,7 +202,7 @@ public class EdgeConvertFileParser {
 
 
 
-   public void parseSaveFile() throws IOException { //this method is fucked
+   public void parseSaveFile() throws IOException {
       StringTokenizer stTables, stNatFields, stRelFields, stNatRelFields, stField;
       EdgeTable tempTable;
       EdgeField tempField;
@@ -261,19 +261,20 @@ public class EdgeConvertFileParser {
             tempField.setDefaultValue(stField.nextToken());
          }
          alFields.add(tempField);
-      }
+      } // while()
    } // parseSaveFile()
 
 
-   private void makeArrays() { //convert ArrayList objects into arrays of the appropriate Class type
+    //convert ArrayList objects into arrays of the appropriate Class type
+   private void makeArrays() {
       if (alTables != null) {
-         tables = (EdgeTable[])alTables.toArray(new EdgeTable[alTables.size()]);
+         tables = (EdgeTable[])alTables.toArray(new EdgeTable[alTables.size()]);       // TABLES are set
       }
       if (alFields != null) {
-         fields = (EdgeField[])alFields.toArray(new EdgeField[alFields.size()]);
+         fields = (EdgeField[])alFields.toArray(new EdgeField[alFields.size()]);       // FIELDS are set
       }
       if (alConnectors != null) {
-         connectors = (EdgeConnector[])alConnectors.toArray(new EdgeConnector[alConnectors.size()]);
+         connectors = (EdgeConnector[])alConnectors.toArray(new EdgeConnector[alConnectors.size()]);  // CONNECTORS are set
       }
    }
    
@@ -289,17 +290,19 @@ public class EdgeConvertFileParser {
    
    public EdgeTable[] getEdgeTables() {
       return tables;
-   }
+   }   // RETURNS the TABLES
    
    public EdgeField[] getEdgeFields() {
       return fields;
-   }
+   }   // RETURNS the FIELDS
 
 
+
+    // Opens the passed in file to read from
+    // Called when passing a file into the EdgeConvertFileParser constructor
    public void openFile(File inputFile) {
       try {
-//         fr = new FileReader(inputFile);
-//         br = new BufferedReader(fr);
+         // Read the file
          br = new BufferedReader((new FileReader(inputFile)));
 
          //test for what kind of file we have
