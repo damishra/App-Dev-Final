@@ -1262,8 +1262,8 @@ public class EdgeConvertGUI {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                saveFile = jfcEdge.getSelectedFile();
                ecfp = new EdgeConvertFileParser(saveFile);
-               tables = ecfp.getEdgeTables();
-               fields = ecfp.getEdgeFields();
+               tables = ecfp.getEdgeTables();            // GUI Gets the TABLES
+               fields = ecfp.getEdgeFields();            // GUI Gets the FIELDS
                ecfp = null;
                populateLists();
                parseFile = null;
